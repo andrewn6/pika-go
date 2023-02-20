@@ -35,6 +35,16 @@ func (sf *Snowflake) gen() string {
 func (sf *Snowflake) genWithTs(timestamp uint64) string {
   if sf.seq >= 4095 && timestamp == sf.lastSequenceExhaustion {
     for time.Now().Unix()-int64(timestamp) < 1 {
+      // 
     }
   }
+
+  id := ((timestamp - sf.epoch) << 22) | (uint64(sf.nodeID) << 12) | uint64(sf.seq)
+  sf.seq = (sf.seq + 1) & 4095
+
+  if sf.seq == 0 {
+    sf.lastSequenceExhaustion = timestamp
+  }
+
+  return strconv.FormatUint(id, 10)
 }
