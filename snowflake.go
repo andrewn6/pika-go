@@ -48,3 +48,18 @@ func (sf *Snowflake) genWithTs(timestamp uint64) string {
 
   return strconv.FormatUint(id, 10)
 }
+
+func (sf *Snowflake) decode(id string) DecodedSnowflake {
+  sfID, _ := strconv.ParseUint(id, 10, 64)
+  timestamp := (sfID >> 22) + sf.epoch
+  nodeID := (sfID >> 12) & 0b1111111111
+  seq := sfID & 0b1111111111
+
+  return DecodedSnowflake {
+    ID: sfID,
+    Timestamp: timestamp,
+    NodeID: uint32(nodeID),
+    Seq: seq,
+    Epoch: sf.epoch,
+  }
+}
